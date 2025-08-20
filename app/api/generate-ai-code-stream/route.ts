@@ -28,6 +28,11 @@ const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const xai = createOpenAI({ // + Addition
+  apiKey: process.env.XAI_API_KEY, // + Addition
+  baseURL: 'https://api.x.ai/v1', // + Addition
+});
+
 // Helper function to analyze user preferences from conversation history
 function analyzeUserPreferences(messages: ConversationMessage[]): {
   commonPatterns: string[];
@@ -1155,10 +1160,12 @@ CRITICAL: When files are provided in the context:
         const isAnthropic = model.startsWith('anthropic/');
         const isGoogle = model.startsWith('google/');
         const isOpenAI = model.startsWith('openai/gpt-5');
+        const isXAI = model.startsWith('xai/');
         const modelProvider = isAnthropic ? anthropic : (isOpenAI ? openai : (isGoogle ? googleGenerativeAI : groq));
         const actualModel = isAnthropic ? model.replace('anthropic/', '') : 
                            (model === 'openai/gpt-5') ? 'gpt-5' :
-                           (isGoogle ? model.replace('google/', '') : model);
+                           (isGoogle ? model.replace('google/', '') : model) :
+                            (isXAI ? model.replace('xai/', '') : model)));
 
         // Make streaming API call with appropriate provider
         const streamOptions: any = {
